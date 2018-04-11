@@ -154,13 +154,14 @@ $(function () {
     el: '#details-pane',
     initialize: function (options) {
       this.jobItems = options.jobItems
-      _.bindAll(this, 'render', 'getSelectedJobs', 'requeueJobs', 'allowDeleteJobs', 'deleteJobs')
+      _.bindAll(this, 'render', 'getSelectedJobs', 'requeueJobs', 'unlockJobs', 'allowDeleteJobs', 'deleteJobs')
       this.listenTo(this.jobItems, 'update', this.render)
       this.listenTo(this.jobItems, 'change', this.render)
       this.render()
     },
     events: {
       'click [data-action=requeue-jobs]': 'requeueJobs',
+      'click [data-action=unlock-jobs]': 'unlockJobs',
       'click [data-action=delete-jobs]': 'allowDeleteJobs',
       'click [data-action=delete-jobs].deleteable': 'deleteJobs'
     },
@@ -180,6 +181,13 @@ $(function () {
       .success(function () {
         App.trigger('refreshData')
       })
+    },
+    unlockJobs: function () {
+      var selectedJobIds = this.getSelectedJobs().map(function (j) { return j.get('_id') })
+      postJobs('unlock', selectedJobIds)
+        .success(function () {
+          App.trigger('refreshData')
+        })
     },
     allowDeleteJobs: function () {
       this.$('[data-action=delete-jobs]').addClass('deleteable').text('Confirm delete selection')
