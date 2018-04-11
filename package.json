@@ -1,5 +1,5 @@
 {
-  "name": "nodeetl-agendash",
+  "name": "ems-agendash",
   "version": "0.4.0",
   "description": "Agenda Dashboard",
   "main": "app.js",
@@ -17,12 +17,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Emarsys-US/nodeetl-agendash.git"
+    "url": "git+https://github.com/Emarsys-US/ems-agendash.git"
   },
   "bugs": {
-    "url": "https://github.com/Emarsys-US/nodeetl-agendash/issues"
+    "url": "https://github.com/Emarsys-US/ems-agendash/issues"
   },
-  "homepage": "https://github.com/Emarsys-US/nodeetl-agendash#readme",
+  "homepage": "https://github.com/Emarsys-US/ems-agendash#readme",
   "license": "MIT",
   "dependencies": {
     "agenda": "^1.0.3",
