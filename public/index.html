@@ -43,9 +43,9 @@
                 <tr>
                   <th>Status</th>
                   <th>Name</th>
-                  <th>Last run started</th>
-                  <th>Next run starts</th>
-                  <th>Last finished</th>
+                  <th>Last Run Started</th>
+                  <th>Next Run Starts</th>
+                  <th>Last Finished</th>
                   <th>Locked</th>
                 </tr>
               </thead>
@@ -55,9 +55,18 @@
         </div>
         <div id="details-pane">
           <h2 class="sub-header"><span class="number-selected">0</span> <small>selected</small></h2>
-          <button type="button" class="btn btn-danger btn-xs" data-action="run-jobs">Run Selected Now</button>
-          <button type="button" class="btn btn-danger btn-xs" data-action="requeue-jobs">Copy and Run Selected</button>
-          <button type="button" class="btn btn-danger btn-xs pull-right" data-action="delete-jobs">Delete Selected</button>
+          <button type="button" class="btn btn-danger btn-xs" data-action="run-jobs"
+                  data-toggle="tooltip" data-placement="top" title="Sets Next Run Starts to now. Only works on unlocked jobs to prevent spawning multiple jobs.">
+            Run Selected Now
+          </button>
+          <button type="button" class="btn btn-danger btn-xs" data-action="requeue-jobs"
+                  data-toggle="tooltip" data-placement="top" title="Creates copy of jobs and runs them now, one time only.">
+            Copy and Run Selected
+          </button>
+          <button type="button" class="btn btn-danger btn-xs pull-right" data-action="delete-jobs"
+                  data-toggle="tooltip" data-placement="top" title="Deletes jobs from database. IMPORTANT: Will be recreated once server restarts if it's a scheduled job.">
+            Delete Selected
+          </button>
           <hr />
           <div id="details-list"></div>
         </div>
@@ -145,9 +154,9 @@
           <% } %>
         </div>
         <div class="panel-footer clearfix">
-          <% if (!job.lockedAt) { %><button type="button" class="btn btn-danger btn-sm" data-action="run-job">Run Now</button><% } %>
-          <button type="button" class="btn btn-danger btn-sm" data-action="requeue">Copy and Run</button>
-          <button type="button" class="btn btn-danger btn-sm pull-right" data-action="delete">Delete</button>
+          <% if (!job.lockedAt) { %><button type="button" class="btn btn-danger btn-sm" data-action="run-job" data-toggle="tooltip" data-placement="top" title="Sets Next Run Starts to now. Only works on unlocked jobs to prevent spawning multiple jobs.">Run Now</button><% } %>
+          <button type="button" class="btn btn-danger btn-sm" data-action="requeue" data-toggle="tooltip" data-placement="top" title="Creates copy of job and runs it now, one time only.">Copy and Run</button>
+          <button type="button" class="btn btn-danger btn-sm pull-right" data-action="delete" data-toggle="tooltip" data-placement="top" title="Deletes job from database. IMPORTANT: Will be recreated once server restarts if it's a scheduled job.">Delete</button>
         </div>
       </div>
     </script>
@@ -158,6 +167,13 @@
     <script src="js/backbone-min.js"></script>
     <script src="js/moment.min.js"></script>
     <script src="js/main.js"></script>
+
+    <script type="application/javascript">
+      // Init tooltips
+      $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+      })
+    </script>
 
   </body>
 </html>

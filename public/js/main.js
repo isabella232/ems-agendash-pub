@@ -295,6 +295,8 @@ $(function () {
     },
     render: function () {
       this.$el.html(this.template(this.model.toJSON()))
+      // Initialize tooltips
+      this.$('[data-toggle="tooltip"]').tooltip()
       return this
     }
   })
