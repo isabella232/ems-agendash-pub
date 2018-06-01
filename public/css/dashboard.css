@@ -1,19 +1,20 @@
 /* Page layout */
 
 #app {
+  padding: 20px;
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
   align-items: stretch;
   height: 100vh;
-  overflow: hidden;
+  /*overflow: hidden;*/
 }
 
 #sidebar {
   padding-top: 20px;
   flex: 0 0 250px;
   order: 1;
-  box-shadow: 4px 0px 3px -2px #eee;
+  box-shadow: 4px 0 3px -2px #eee;
   overflow: scroll;
 }
 
@@ -23,21 +24,21 @@
   flex: 1 1;
   display: flex;
   flex-direction: column;
-  overflow: scroll;
+  /*overflow: scroll;*/
 }
 
 #list-pane {
   flex: 1 1 750px;
   order: 1;
   padding: 10px;
-  overflow: scroll;
+  /*overflow: scroll;*/
 }
 
 #details-pane {
   padding: 10px;
   flex: 1 0 370px;
   order: 2;
-  box-shadow: 0px -2px 3px 0px #eee;
+  box-shadow: 0 -2px 3px 0 #eee;
   margin-top: 10px;
   overflow: scroll;
 }
@@ -46,7 +47,7 @@
   padding: 10px;
   flex: 1 0 370px;
   order: 2;
-  box-shadow: 0px -2px 3px 0px #eee;
+  box-shadow: 0 -2px 3px 0 #eee;
   margin-top: 10px;
   overflow: scroll;
 }
@@ -58,16 +59,16 @@
   }
   #details-pane {
     margin-top: 0;
-    box-shadow: -2px 0px 3px 0px #eee;
+    box-shadow: -2px 0 3px 0 #eee;
   }
   #create-job-pane {
     margin-top: 0;
-    box-shadow: -2px 0px 3px 0px #eee;
+    box-shadow: -2px 0 3px 0 #eee;
   }
 }
 
 /* Details, styling */
-
+input.refresh-interval { width: 4em !important;}
 .page-title {
   margin: 0 auto 10px; /* override h1 defaults */
 }
@@ -87,6 +88,8 @@
 #job-list tr {
   cursor: pointer;
 }
+
+#job-overview-list .label { margin-left: 1em; }
 
 .sub-header {
   padding-bottom: 10px;

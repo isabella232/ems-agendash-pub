@@ -2,8 +2,10 @@
 $(function () {
   var CurrentRequestModel = Backbone.Model.extend({
     defaults: {
+      // refreshInterval: 2000000,
       refreshInterval: 2000,
-      overviewFilterRegex: /.*/
+      overviewFilterRegex: /.*/,
+      jobListFilterRegex: /.*/
     }
   })
 
@@ -107,18 +109,31 @@ $(function () {
   var JobListView = Backbone.View.extend({
     el: '#job-list',
     initialize: function (options) {
+      // console.log("OPTIONS:", options);
       this.jobItems = options.jobItems
+      this.currentRequest = options.currentRequest
       _.bindAll(this, 'render')
       this.listenTo(this.jobItems, 'update', this.render)
       this.render()
     },
     render: _.throttle(function () {
-      this.$el.empty().append(this.jobItems.map(function (jobItem) {
+      // TODO REGEX DOESN'T WORK YET
+      // console.log(this.currentRequest);
+      var jobListFilterRegex = this.currentRequest.get('jobListFilterRegex');
+      this.$el.empty().append(this.jobItems.filter(function (jobItem) {
+        return jobListFilterRegex.test(jobItem.get('_id'))
+      }).map(function (jobItem) {
         var jobItemView = new JobItemView({
           model: jobItem
         })
         return jobItemView.render().$el
-      }))
+      }));
+      // this.$el.empty().append(this.jobItems.map(function (jobItem) {
+      //   var jobItemView = new JobItemView({
+      //     model: jobItem
+      //   })
+      //   return jobItemView.render().$el
+      // }));
       return this
     }, 300)
   })
@@ -127,11 +142,12 @@ $(function () {
     el: '#sidebar',
     events: {
       'keyup .overview-filter': 'updateOverviewFilter',
+      'keyup .job-list-filter': 'updateJobListFilter',
       'change .refresh-interval': 'updateRefreshInterval'
     },
     initialize: function (options) {
       this.currentRequest = options.currentRequest
-      _.bindAll(this, 'updateOverviewFilter', 'updateRefreshInterval')
+      _.bindAll(this, 'updateOverviewFilter', 'updateJobListFilter', 'updateRefreshInterval')
     },
     updateOverviewFilter: function (e) {
       // http://stackoverflow.com/questions/3446170/escape-string-for-use-in-javascript-regex
@@ -141,6 +157,15 @@ $(function () {
       }).join('.*'), 'i')
       this.currentRequest.set({
         overviewFilterRegex: newFilterRegex
+      })
+    },
+    updateJobListFilter: function (e) {
+      var str = $(e.currentTarget).val()
+      var newFilterRegex = new RegExp(str.split('').map(function (char) {
+        return char.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/, '\\$&')
+      }).join('.*'), 'i')
+      this.currentRequest.set({
+        jobListFilterRegex: newFilterRegex
       })
     },
     updateRefreshInterval: function (e) {
@@ -154,14 +179,14 @@ $(function () {
     el: '#details-pane',
     initialize: function (options) {
       this.jobItems = options.jobItems
-      _.bindAll(this, 'render', 'getSelectedJobs', 'requeueJobs', 'unlockJobs', 'allowDeleteJobs', 'deleteJobs')
+      _.bindAll(this, 'render', 'getSelectedJobs', 'requeueJobs', 'allowDeleteJobs', 'deleteJobs')
       this.listenTo(this.jobItems, 'update', this.render)
       this.listenTo(this.jobItems, 'change', this.render)
       this.render()
     },
     events: {
+      'click [data-action=run-jobs]': 'runJobs',
       'click [data-action=requeue-jobs]': 'requeueJobs',
-      'click [data-action=unlock-jobs]': 'unlockJobs',
       'click [data-action=delete-jobs]': 'allowDeleteJobs',
       'click [data-action=delete-jobs].deleteable': 'deleteJobs'
     },
@@ -175,19 +200,19 @@ $(function () {
       this.$('[data-action=delete-jobs]').removeClass('deleteable').text('Delete selected')
       return this
     },
+    runJobs: function () {
+      var selectedJobIds = this.getSelectedJobs().map(function (j) { return j.get('_id') })
+      postJobs('run', selectedJobIds)
+      .success(function () {
+        App.trigger('refreshData')
+      })
+    },
     requeueJobs: function () {
       var selectedJobIds = this.getSelectedJobs().map(function (j) { return j.get('_id') })
       postJobs('requeue', selectedJobIds)
       .success(function () {
         App.trigger('refreshData')
       })
-    },
-    unlockJobs: function () {
-      var selectedJobIds = this.getSelectedJobs().map(function (j) { return j.get('_id') })
-      postJobs('unlock', selectedJobIds)
-        .success(function () {
-          App.trigger('refreshData')
-        })
     },
     allowDeleteJobs: function () {
       this.$('[data-action=delete-jobs]').addClass('deleteable').text('Confirm delete selection')
@@ -228,11 +253,12 @@ $(function () {
     model: JobItemModel,
     template: _.template($('#job-item-details-template').html()),
     initialize: function () {
-      _.bindAll(this, 'render', 'close', 'requeueJob', 'allowDeleteJob', 'deleteJob')
+      _.bindAll(this, 'render', 'close', 'runJob', 'requeueJob', 'allowDeleteJob', 'deleteJob')
       this.listenTo(this.model, 'change', this.render)
     },
     events: {
       'click .close': 'close',
+      'click [data-action=run-job]': 'runJob',
       'click [data-action=requeue]': 'requeueJob',
       'click [data-action=delete]': 'allowDeleteJob',
       'click [data-action=delete].deleteable': 'deleteJob'
@@ -240,6 +266,13 @@ $(function () {
     showJob: function (jobItem) {
       this.model = jobItem
       this.$el.empty().append(this.jobItemDetailsTemplate(jobItem.toJSON()))
+    },
+    runJob: function (e) {
+      postJobs('run', [this.model.get('job')._id])
+        .success(function () {
+          $(e.currentTarget).remove()
+          App.trigger('refreshData')
+        })
     },
     requeueJob: function (e) {
       postJobs('requeue', [this.model.get('job')._id])
@@ -357,6 +390,7 @@ $(function () {
         overviewItems: this.overviewItems
       })
       this.jobListView = new JobListView({
+        currentRequest: this.currentRequest,
         jobItems: this.jobItems
       })
       this.jobDetailsPaneView = new JobDetailsPaneView({
