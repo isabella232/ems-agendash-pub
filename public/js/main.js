@@ -179,7 +179,7 @@ $(function () {
         el: '#details-pane',
         initialize: function (options) {
             this.jobItems = options.jobItems
-            _.bindAll(this, 'render', 'getSelectedJobs', 'requeueJobs', 'allowDeleteJobs', 'deleteJobs')
+            _.bindAll(this, 'render', 'getSelectedJobs', 'runJobs', 'unlockJobs', 'requeueJobs', 'allowDeleteJobs', 'deleteJobs')
             this.listenTo(this.jobItems, 'update', this.render)
             this.listenTo(this.jobItems, 'change', this.render)
             this.render()
@@ -187,6 +187,7 @@ $(function () {
         events: {
             'click [data-action=run-jobs]': 'runJobs',
             'click [data-action=requeue-jobs]': 'requeueJobs',
+            'click [data-action=unlock-jobs]': 'unlockJobs',
             'click [data-action=delete-jobs]': 'allowDeleteJobs',
             'click [data-action=delete-jobs].deleteable': 'deleteJobs'
         },
@@ -210,6 +211,13 @@ $(function () {
         requeueJobs: function () {
             let selectedJobIds = this.getSelectedJobs().map(function (j) { return j.get('_id') })
             postJobs('requeue', selectedJobIds)
+            .success(function () {
+                App.trigger('refreshData')
+            })
+        },
+        unlockJobs: function () {
+            let selectedJobIds = this.getSelectedJobs().map(function (j) { return j.get('_id') })
+            postJobs('unlock', selectedJobIds)
             .success(function () {
                 App.trigger('refreshData')
             })
@@ -253,12 +261,13 @@ $(function () {
         model: JobItemModel,
         template: _.template($('#job-item-details-template').html()),
         initialize: function () {
-            _.bindAll(this, 'render', 'close', 'runJob', 'requeueJob', 'allowDeleteJob', 'deleteJob')
+            _.bindAll(this, 'render', 'close', 'runJob', 'unlockJob', 'requeueJob', 'allowDeleteJob', 'deleteJob')
             this.listenTo(this.model, 'change', this.render)
         },
         events: {
             'click .close': 'close',
             'click [data-action=run-job]': 'runJob',
+            'click [data-action=unlock-job]': 'unlockJob',
             'click [data-action=requeue]': 'requeueJob',
             'click [data-action=delete]': 'allowDeleteJob',
             'click [data-action=delete].deleteable': 'deleteJob'
@@ -269,6 +278,13 @@ $(function () {
         },
         runJob: function (e) {
             postJobs('run', [this.model.get('job')._id])
+            .success(function () {
+                $(e.currentTarget).remove()
+                App.trigger('refreshData')
+            })
+        },
+        unlockJob: function (e) {
+            postJobs('unlock', [this.model.get('job')._id])
             .success(function () {
                 $(e.currentTarget).remove()
                 App.trigger('refreshData')
