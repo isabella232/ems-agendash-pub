@@ -43,6 +43,8 @@
   overflow: scroll;
 }
 
+#details-pane pre { max-width: 500px; }
+
 #create-job-pane {
   padding: 10px;
   flex: 1 0 370px;
