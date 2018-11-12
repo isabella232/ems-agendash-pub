@@ -444,7 +444,6 @@ $(function () {
                 overviewItems: this.overviewItems,
                 activeTab: this.activeTab
             })
-            })
             this.jobListView = new JobListView({
                 currentRequest: this.currentRequest,
                 jobItems: this.jobItems
