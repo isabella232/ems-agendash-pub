@@ -179,7 +179,7 @@ $(function () {
         el: '#details-pane',
         initialize: function (options) {
             this.jobItems = options.jobItems
-            _.bindAll(this, 'render', 'getSelectedJobs', 'runJobs', 'unlockJobs', 'requeueJobs', 'allowDeleteJobs', 'deleteJobs')
+            _.bindAll(this, 'render', 'getSelectedJobs', 'runJobs', 'unlockJobs', 'enableJobs', 'disableJobs', 'requeueJobs', 'allowDeleteJobs', 'deleteJobs')
             this.listenTo(this.jobItems, 'update', this.render)
             this.listenTo(this.jobItems, 'change', this.render)
             this.render()
@@ -188,6 +188,8 @@ $(function () {
             'click [data-action=run-jobs]': 'runJobs',
             'click [data-action=requeue-jobs]': 'requeueJobs',
             'click [data-action=unlock-jobs]': 'unlockJobs',
+            'click [data-action=enable-jobs]': 'enableJobs',
+            'click [data-action=disable-jobs]': 'disableJobs',
             'click [data-action=delete-jobs]': 'allowDeleteJobs',
             'click [data-action=delete-jobs].deleteable': 'deleteJobs'
         },
@@ -218,6 +220,20 @@ $(function () {
         unlockJobs: function () {
             let selectedJobIds = this.getSelectedJobs().map(function (j) { return j.get('_id') })
             postJobs('unlock', selectedJobIds)
+            .success(function () {
+                App.trigger('refreshData')
+            })
+        },
+        enableJobs: function () {
+            let selectedJobIds = this.getSelectedJobs().map(function (j) { return j.get('_id') })
+            postJobs('enable', selectedJobIds)
+            .success(function () {
+                App.trigger('refreshData')
+            })
+        },
+        disableJobs: function () {
+            let selectedJobIds = this.getSelectedJobs().map(function (j) { return j.get('_id') })
+            postJobs('disable', selectedJobIds)
             .success(function () {
                 App.trigger('refreshData')
             })
@@ -261,7 +277,7 @@ $(function () {
         model: JobItemModel,
         template: _.template($('#job-item-details-template').html()),
         initialize: function () {
-            _.bindAll(this, 'render', 'close', 'runJob', 'unlockJob', 'requeueJob', 'allowDeleteJob', 'deleteJob')
+            _.bindAll(this, 'render', 'close', 'runJob', 'unlockJob', 'requeueJob', 'enableJob', 'disableJob', 'allowDeleteJob', 'deleteJob')
             this.listenTo(this.model, 'change', this.render)
         },
         events: {
@@ -269,6 +285,8 @@ $(function () {
             'click [data-action=run-job]': 'runJob',
             'click [data-action=unlock-job]': 'unlockJob',
             'click [data-action=requeue]': 'requeueJob',
+            'click [data-action=enable]': 'enableJob',
+            'click [data-action=disable]': 'disableJob',
             'click [data-action=delete]': 'allowDeleteJob',
             'click [data-action=delete].deleteable': 'deleteJob'
         },
@@ -294,6 +312,18 @@ $(function () {
             postJobs('requeue', [this.model.get('job')._id])
             .success(function () {
                 $(e.currentTarget).remove()
+                App.trigger('refreshData')
+            })
+        },
+        enableJob: function (e) {
+            postJobs('enable', [this.model.get('job')._id])
+            .success(function () {
+                App.trigger('refreshData')
+            })
+        },
+        disableJob: function (e) {
+            postJobs('disable', [this.model.get('job')._id])
+            .success(function () {
                 App.trigger('refreshData')
             })
         },

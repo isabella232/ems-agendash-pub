@@ -97,3 +97,23 @@ input.refresh-interval { width: 4em !important;}
   padding-bottom: 10px;
   border-bottom: 1px solid #eee;
 }
+
+/* Background color for row of disabled jobs */
+.table > thead > tr > td.disabled,
+.table > tbody > tr > td.disabled,
+.table > tfoot > tr > td.disabled,
+.table > thead > tr > th.disabled,
+.table > tbody > tr > th.disabled,
+.table > tfoot > tr > th.disabled {
+    background-color: #e7e7e7;
+}
+
+/* Disabled, selected jobs */
+.table > thead > tr.active > td.disabled,
+.table > tbody > tr.active > td.disabled,
+.table > tfoot > tr.active > td.disabled,
+.table > thead > tr.active > th.disabled,
+.table > tbody > tr.active > th.disabled,
+.table > tfoot > tr.active > th.disabled {
+    background-color: #f5f5f5;
+}

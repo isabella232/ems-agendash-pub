@@ -67,6 +67,14 @@
                         data-toggle="tooltip" data-placement="top" title="Unlocks jobs. Only works on locked jobs. WARNING: Unlocking a job can cause multiple instances of a job to run at once. Be sure the job is not actually running.">
                     Unlock Selected
                 </button>
+                <button type="button" class="btn btn-danger btn-xs" data-action="enable-jobs"
+                        data-toggle="tooltip" data-placement="top" title="Enables jobs. Only runs on disabled jobs.">
+                    Enable Selected
+                </button>
+                <button type="button" class="btn btn-danger btn-xs" data-action="disable-jobs"
+                        data-toggle="tooltip" data-placement="top" title="Disable jobs. Only runs on enabled jobs.">
+                    Disable Selected
+                </button>
                 <button type="button" class="btn btn-danger btn-xs pull-right" data-action="delete-jobs"
                         data-toggle="tooltip" data-placement="top" title="Deletes jobs from database. IMPORTANT: Will be recreated once server restarts if it's a scheduled job.">
                     Delete Selected
@@ -110,25 +118,33 @@
             <li data-state="completed"><a class="text-success" href="#">Completed<span class="label label-success"><%- completed %></span></a></li>
             <li data-state="failed"><a class="text-danger" href="#">Failed<span class="label label-danger"><%- failed %></span></a></li>
             <li data-state="repeating"><a class="text-info" href="#">Repeating<span class="label label-info"><%- repeating %></span></a></li>
+            <li data-state="disabled"><a class="text-info" href="#">Disabled<span class="label label-default"><%- disabled %></span></a></li>
         </ul>
     </script>
 
     <script type="text/template" id="job-item-template">
-        <td>
-            <% if (repeating) { %><span class="label label-info"><i class="glyphicon glyphicon-repeat"></i> <%- job.repeatInterval %></span><% } %>
-            <% if (scheduled) { %><span class="label label-info">Scheduled</span><% } %>
-            <% if (queued) { %><span class="label label-primary">Queued</span><% } %>
-            <% if (running) { %><span class="label label-warning">Running</span><% } %>
-            <% if (completed) { %><span class="label label-success">Completed</span><% } %>
-            <% if (failed) { %><span class="label label-danger">Failed</span><% } %>
+        <td <% if (disabled) { %>class="disabled"<% }%>>
+            <% if (disabled) { %>
+                <span class="label label-default">DISABLED</span>
+            <% }
+            else { %>
+                <% if (repeating) { %><span class="label label-info"><i class="glyphicon glyphicon-repeat"></i> <%- job.repeatInterval %></span><% } %>
+                <% if (scheduled) { %><span class="label label-info">Scheduled</span><% } %>
+                <% if (queued) { %><span class="label label-primary">Queued</span><% } %>
+                <% if (running) { %><span class="label label-warning">Running</span><% } %>
+                <% if (completed) { %><span class="label label-success">Completed</span><% } %>
+                <% if (failed) { %><span class="label label-danger">Failed</span><% } %>
+            <% }%>
         </td>
-        <td>
+        <td <% if (disabled) { %>class="disabled"<% }%>>
             <%- job.name %>
         </td>
-        <td><% if (job.lastRunAt) { %><time datetime="<%- moment(job.lastRunAt).toISOString() %>"><%- moment(job.lastRunAt).fromNow() %></time><% } %></td>
-        <td><% if (job.nextRunAt) { %><time datetime="<%- moment(job.nextRunAt).toISOString() %>"><%- moment(job.nextRunAt).fromNow() %></time><% } %></td>
-        <td><% if (job.lastFinishedAt) { %><time datetime="<%- moment(job.lastFinishedAt).toISOString() %>"><%- moment(job.lastFinishedAt).fromNow() %></time><% } %></td>
-        <td><% if (job.lockedAt) { %><time datetime="<%- moment(job.lockedAt).toISOString() %>"><%- moment(job.lockedAt).fromNow() %></time><% } %></td>
+        <td <% if (disabled) { %>class="disabled"<% }%>><% if (job.lastRunAt) { %><time datetime="<%- moment(job.lastRunAt).toISOString() %>"><%- moment(job.lastRunAt).fromNow() %></time><% } %></td>
+        <td <% if (disabled) { %>class="disabled"<% }%>>
+            <% if (!disabled && job.nextRunAt) { %><time datetime="<%- moment(job.nextRunAt).toISOString() %>"><%- moment(job.nextRunAt).fromNow() %></time><% } %>
+        </td>
+        <td <% if (disabled) { %>class="disabled"<% }%>><% if (job.lastFinishedAt) { %><time datetime="<%- moment(job.lastFinishedAt).toISOString() %>"><%- moment(job.lastFinishedAt).fromNow() %></time><% } %></td>
+        <td <% if (disabled) { %>class="disabled"<% }%>><% if (job.lockedAt) { %><time datetime="<%- moment(job.lockedAt).toISOString() %>"><%- moment(job.lockedAt).fromNow() %></time><% } %></td>
     </script>
 
     <script type="text/template" id="job-item-details-template">
@@ -136,19 +152,33 @@
             <div class="panel-heading">
                 <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <h3 class="panel-title"><%- job.name %></h3>
-                <% if (repeating) { %><span class="label label-info"><i class="glyphicon glyphicon-repeat"></i> <%- job.repeatInterval %></span><% } %>
-                <% if (scheduled) { %><span class="label label-info">Scheduled</span><% } %>
-                <% if (queued) { %><span class="label label-primary">Queued</span><% } %>
-                <% if (running) { %><span class="label label-warning">Running</span><% } %>
-                <% if (completed) { %><span class="label label-success">Completed</span><% } %>
-                <% if (failed) { %><span class="label label-danger">Failed</span><% } %>
+                <% if (disabled) { %>
+                    <span class="label label-default">DISABLED</span>
+                <% }
+                else { %>
+                    <% if (repeating) { %><span class="label label-info"><i class="glyphicon glyphicon-repeat"></i> <%- job.repeatInterval %></span><% } %>
+                    <% if (scheduled) { %><span class="label label-info">Scheduled</span><% } %>
+                    <% if (queued) { %><span class="label label-primary">Queued</span><% } %>
+                    <% if (running) { %><span class="label label-warning">Running</span><% } %>
+                    <% if (completed) { %><span class="label label-success">Completed</span><% } %>
+                    <% if (failed) { %><span class="label label-danger">Failed</span><% } %>
+                <% }%>
             </div>
             <div class="panel-body">
                 <% if (job.lastRunAt) { %><p>Last run <time datetime="<%- moment(job.lastRunAt).toISOString() %>"><%- moment(job.lastRunAt).fromNow() %></time></p><% } %>
-                <% if (job.nextRunAt) { %><p>Next run <time datetime="<%- moment(job.nextRunAt).toISOString() %>"><%- moment(job.nextRunAt).fromNow() %></time></p><% } %>
+                <% if (!disabled && job.nextRunAt) { %><p>Next run <time datetime="<%- moment(job.nextRunAt).toISOString() %>"><%- moment(job.nextRunAt).fromNow() %></time></p><% } %>
                 <% if (job.lastFinishedAt) { %><p>Last finished <time datetime="<%- moment(job.lastFinishedAt).toISOString() %>"><%- moment(job.lastFinishedAt).fromNow() %></time></p><% } %>
                 <% if (job.lockedAt) { %><p>Locked <time datetime="<%- moment(job.lockedAt).toISOString() %>"><%- moment(job.lockedAt).fromNow() %></time></p><% } %>
-                <% if (job.repeatInterval) { %><p>Repeat each <%- job.repeatInterval %></p><% } %>
+                <% if (job.repeatInterval) { %>
+                <p>
+                    <% if (disabled) { %>
+                        Previous Schedule
+                    <% } else {%>
+                    Repeat each
+                    <% }%>
+                    <%- job.repeatInterval %>
+                </p>
+                <% } %>
 
                 <strong>Job data</strong>
                 <pre><%- JSON.stringify(job.data, null, 2) %></pre>
@@ -174,6 +204,17 @@
                         <!--data-toggle="tooltip" data-placement="top" title="Creates copy of job and runs it now, one time only.">-->
                     <!--Copy and Run-->
                 <!--</button>-->
+                <% if (!disabled) { %>
+                <button type="button" class="btn btn-danger btn-sm" data-action="disable"
+                        data-toggle="tooltip" data-placement="top" title="Disables job until re-enabled.">
+                    Disable
+                </button>
+                <% } else { %>
+                <button type="button" class="btn btn-danger btn-sm" data-action="enable"
+                        data-toggle="tooltip" data-placement="top" title="Enables job. Careful, this may run the job right away.">
+                    Enable
+                </button>
+                <% } %>
                 <button type="button" class="btn btn-danger btn-sm pull-right" data-action="delete"
                         data-toggle="tooltip" data-placement="top" title="Deletes job from database. IMPORTANT: Will be recreated once server restarts if it's a scheduled job.">
                     Delete
