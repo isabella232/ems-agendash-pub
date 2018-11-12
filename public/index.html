@@ -57,27 +57,27 @@
                 <h2 class="sub-header"><span class="number-selected">0</span> <small>selected</small></h2>
                 <button type="button" class="btn btn-danger btn-xs" data-action="run-jobs"
                         data-toggle="tooltip" data-placement="top" title="Sets Next Run Starts to now. Only works on unlocked jobs to prevent spawning multiple jobs.">
-                    Run Selected Now
+                    Run All Now
                 </button>
                 <!--<button type="button" class="btn btn-danger btn-xs" data-action="requeue-jobs"-->
                         <!--data-toggle="tooltip" data-placement="top" title="Creates copy of jobs and runs them now, one time only.">-->
-                    <!--Copy and Run Selected-->
+                    <!--Copy and Run All-->
                 <!--</button>-->
                 <button type="button" class="btn btn-danger btn-xs" data-action="unlock-jobs"
                         data-toggle="tooltip" data-placement="top" title="Unlocks jobs. Only works on locked jobs. WARNING: Unlocking a job can cause multiple instances of a job to run at once. Be sure the job is not actually running.">
-                    Unlock Selected
+                    Unlock All
                 </button>
                 <button type="button" class="btn btn-danger btn-xs" data-action="enable-jobs"
                         data-toggle="tooltip" data-placement="top" title="Enables jobs. Only runs on disabled jobs.">
-                    Enable Selected
+                    Enable All
                 </button>
                 <button type="button" class="btn btn-danger btn-xs" data-action="disable-jobs"
                         data-toggle="tooltip" data-placement="top" title="Disable jobs. Only runs on enabled jobs.">
-                    Disable Selected
+                    Disable All
                 </button>
                 <button type="button" class="btn btn-danger btn-xs pull-right" data-action="delete-jobs"
                         data-toggle="tooltip" data-placement="top" title="Deletes jobs from database. IMPORTANT: Will be recreated once server restarts if it's a scheduled job.">
-                    Delete Selected
+                    Delete All
                 </button>
                 <hr />
                 <div id="details-list"></div>
