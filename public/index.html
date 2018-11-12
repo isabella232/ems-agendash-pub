@@ -30,7 +30,7 @@
                         <li role="presentation">
                             <input type="text" class="job-list-filter form-control" placeholder="Filter... (I don't work yet!)">
                         </li>
-                        <li role="presentation"><a role="button" data-action="schedule-job">Schedule job</a></li>
+                        <!--<li role="presentation"><a role="button" data-action="schedule-job">Schedule job</a></li>-->
                         <li role="presentation"><a role="button" data-action="select-all">Select all</a></li>
                         <li role="presentation"><a role="button" data-action="select-none">Select none</a></li>
                     </ul>
@@ -111,14 +111,14 @@
 
     <script type="text/template" id="overview-item-template">
         <ul class="nav nav-tabs">
-            <li data-state=""><a class="text-muted" href="#"><strong><%- displayName %></strong><span class="label label-default"><%- total %></span></a></li>
-            <li data-state="scheduled"><a class="text-info" href="#">Scheduled<span class="label label-info"><%- scheduled %></span></a></li>
-            <li data-state="queued"><a class="text-primary" href="#">Queued<span class="label label-primary"><%- queued %></span></a></li>
-            <li data-state="running"><a class="text-warning" href="#">Running<span class="label label-warning"><%- running %></span></a></li>
-            <li data-state="completed"><a class="text-success" href="#">Completed<span class="label label-success"><%- completed %></span></a></li>
-            <li data-state="failed"><a class="text-danger" href="#">Failed<span class="label label-danger"><%- failed %></span></a></li>
-            <li data-state="repeating"><a class="text-info" href="#">Repeating<span class="label label-info"><%- repeating %></span></a></li>
-            <li data-state="disabled"><a class="text-info" href="#">Disabled<span class="label label-default"><%- disabled %></span></a></li>
+            <li data-state="" <% if (!activeTab) { %>class="active"<% }%>><a class="text-muted" href="#"><strong><%- displayName %></strong><span class="label label-info"><%- total %></span></a></li>
+            <!--<li data-state="scheduled" <% if (activeTab == "scheduled") { %>class="active"<% }%>><a class="text-info" href="#">Scheduled<span class="label label-info"><%- scheduled %></span></a></li>-->
+            <!--<li data-state="queued" <% if (activeTab == "queued") { %>class="active"<% }%>><a class="text-primary" href="#">Queued<span class="label label-primary"><%- queued %></span></a></li>-->
+            <li data-state="running" <% if (activeTab == "running") { %>class="active"<% }%>><a class="text-warning" href="#">Running<span class="label label-warning"><%- running %></span></a></li>
+            <!--<li data-state="completed" <% if (activeTab == "completed") { %>class="active"<% }%>><a class="text-success" href="#">Completed<span class="label label-success"><%- completed %></span></a></li>-->
+            <li data-state="failed" <% if (activeTab == "failed") { %>class="active"<% }%>><a class="text-danger" href="#">Failed<span class="label label-danger"><%- failed %></span></a></li>
+            <!--<li data-state="repeating" <% if (activeTab == "repeating") { %>class="active"<% }%>><a class="text-info" href="#">Repeating<span class="label label-info"><%- repeating %></span></a></li>-->
+            <li data-state="disabled" <% if (activeTab == "disabled") { %>class="active"<% }%>><a class="text-info" href="#">Disabled<span class="label label-default"><%- disabled %></span></a></li>
         </ul>
     </script>
 

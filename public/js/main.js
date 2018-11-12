@@ -10,6 +10,7 @@ $(function () {
     })
 
     let ActiveTitleModel = Backbone.Model.extend({})
+    let ActiveTabModel = Backbone.Model.extend({})
 
     let OverviewItemModel = Backbone.Model.extend({})
     let OverviewItemCollection = Backbone.Collection.extend({
@@ -67,15 +68,19 @@ $(function () {
         initialize: function (options) {
             this.overviewItems = options.overviewItems
             this.currentRequest = options.currentRequest
+            this.activeTab = options.activeTab
             _.bindAll(this, 'render')
             this.listenTo(this.overviewItems, 'update', this.render)
             this.render()
         },
         render: function () {
+            let self = this;
+
             let overviewFilterRegex = this.currentRequest.get('overviewFilterRegex')
             this.$el.empty().append(this.overviewItems.filter(function (overviewItem) {
                 return overviewFilterRegex.test(overviewItem.get('_id'))
             }).map(function (overviewItem) {
+                overviewItem.attributes.activeTab = self.activeTab.get('state');
                 let overviewItemView = new OverviewItemView({
                     model: overviewItem
                 })
@@ -423,6 +428,7 @@ $(function () {
             )
 
             this.activeTitle = new ActiveTitleModel()
+            this.activeTab = new ActiveTabModel()
             this.currentRequest = new CurrentRequestModel()
             this.overviewItems = new OverviewItemCollection()
             this.jobItems = new JobItemCollection()
@@ -435,7 +441,9 @@ $(function () {
             })
             this.overviewListView = new OverviewListView({
                 currentRequest: this.currentRequest,
-                overviewItems: this.overviewItems
+                overviewItems: this.overviewItems,
+                activeTab: this.activeTab
+            })
             })
             this.jobListView = new JobListView({
                 currentRequest: this.currentRequest,
@@ -480,6 +488,7 @@ $(function () {
                 job: results.currentRequest.job,
                 state: results.currentRequest.state
             })
+            this.activeTab.set({state: results.currentRequest.state})
             this.render(results)
             this.jobItems.set(results.jobs)
             this._fetchTimeout = setTimeout(this.fetchData, this.currentRequest.get('refreshInterval'))
