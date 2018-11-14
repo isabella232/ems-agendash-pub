@@ -13,19 +13,53 @@
 </head>
 
 <body>
+    <!-- ------ MODALS ------ -->
+    <!-- job disable modal -->
+    <!-- TODO: Add job details -->
+    <div id="disable-job-pane" class="modal" tabindex="-1" role="dialog" data-backdrop="static">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form>
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h3 class="modal-title">Disable Job: <span class="job-name"></span></h3>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <p><small>Describe why the job is being disabled, including if it should be disabled permanently or temporarily.</small></p>
+                            <input type="text" class="job-disable-reason form-control" placeholder="Reason for Disabling" aria-describedby="reasonRequiredHelpBlock">
+                            <span id="reasonRequiredHelpBlock" class="help-block hide">Reason for disabling is required.</span>
+                            <input type="hidden" class="job-id form-control" value="" />
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-default btn-danger" data-action="save">Disable</button>
+                        <button type="button" class="btn btn-default btn-warning" data-action="cancel" data-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- END job disable modal -->
+
+    <!-- ------ END MODALS ------ -->
+
+
     <div id="app">
         <div id="main-pane">
             <div id="list-pane">
-                <h1 class="page-title"></h1>
                 <!--<div class="form-group">-->
                 <!--<label for="overviewFilter">Filter by name</label>-->
                 <!--<input type="text" class="overview-filter form-control">-->
                 <!--</div>-->
                 <div class="page-header">
-                    <h2 id="active-title">
-                        <span class="active-job"></span>
-                        <small class="active-state"></small>
-                    </h2>
+                    <div id="active-title">
+                        <h1>
+                            <span class="page-title"></span>
+                            <small class="active-state"></small>
+                        </h1>
+                    </div>
                     <ul id="select-jobs" class="nav nav-pills">
                         <li role="presentation">
                             <input type="text" class="job-list-filter form-control" placeholder="Filter... (I don't work yet!)">
@@ -70,10 +104,6 @@
                 <button type="button" class="btn btn-danger btn-xs" data-action="enable-jobs"
                         data-toggle="tooltip" data-placement="top" title="Enables jobs. Only runs on disabled jobs.">
                     Enable All
-                </button>
-                <button type="button" class="btn btn-danger btn-xs" data-action="disable-jobs"
-                        data-toggle="tooltip" data-placement="top" title="Disable jobs. Only runs on enabled jobs.">
-                    Disable All
                 </button>
                 <button type="button" class="btn btn-danger btn-xs pull-right" data-action="delete-jobs"
                         data-toggle="tooltip" data-placement="top" title="Deletes jobs from database. IMPORTANT: Will be recreated once server restarts if it's a scheduled job.">
@@ -138,6 +168,7 @@
         </td>
         <td <% if (disabled) { %>class="disabled"<% }%>>
             <%- job.name %>
+        <p><small><% if (disabled) { %>Disable Reason: <%- job.disableReason %><% }%></small></p>
         </td>
         <td <% if (disabled) { %>class="disabled"<% }%>><% if (job.lastRunAt) { %><time datetime="<%- moment(job.lastRunAt).toISOString() %>"><%- moment(job.lastRunAt).fromNow() %></time><% } %></td>
         <td <% if (disabled) { %>class="disabled"<% }%>>
@@ -154,6 +185,7 @@
                 <h3 class="panel-title"><%- job.name %></h3>
                 <% if (disabled) { %>
                     <span class="label label-default">DISABLED</span>
+                    <p><small>Disable Reason: <%- job.disableReason %></small></p>
                 <% }
                 else { %>
                     <% if (repeating) { %><span class="label label-info"><i class="glyphicon glyphicon-repeat"></i> <%- job.repeatInterval %></span><% } %>

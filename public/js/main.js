@@ -35,8 +35,9 @@ $(function () {
             this.listenTo(this.activeTitle, 'change', this.render)
         },
         render: function () {
-            this.$('.active-job').text(this.activeTitle.get('job'))
-            this.$('.active-state').text(this.activeTitle.get('state'))
+            this.$('.active-state').text(
+                (this.activeTitle.get('state') ? this.activeTitle.get('state') : 'All') + ' jobs'
+            );
             return this
         }
     })
@@ -71,6 +72,7 @@ $(function () {
             this.activeTab = options.activeTab
             _.bindAll(this, 'render')
             this.listenTo(this.overviewItems, 'update', this.render)
+            this.listenTo(this.activeTab, 'change', this.render)
             this.render()
         },
         render: function () {
@@ -184,7 +186,7 @@ $(function () {
         el: '#details-pane',
         initialize: function (options) {
             this.jobItems = options.jobItems
-            _.bindAll(this, 'render', 'getSelectedJobs', 'runJobs', 'unlockJobs', 'enableJobs', 'disableJobs', 'requeueJobs', 'allowDeleteJobs', 'deleteJobs')
+            _.bindAll(this, 'render', 'getSelectedJobs', 'runJobs', 'unlockJobs', 'enableJobs', 'requeueJobs', 'allowDeleteJobs', 'deleteJobs')
             this.listenTo(this.jobItems, 'update', this.render)
             this.listenTo(this.jobItems, 'change', this.render)
             this.render()
@@ -194,7 +196,6 @@ $(function () {
             'click [data-action=requeue-jobs]': 'requeueJobs',
             'click [data-action=unlock-jobs]': 'unlockJobs',
             'click [data-action=enable-jobs]': 'enableJobs',
-            'click [data-action=disable-jobs]': 'disableJobs',
             'click [data-action=delete-jobs]': 'allowDeleteJobs',
             'click [data-action=delete-jobs].deleteable': 'deleteJobs'
         },
@@ -232,13 +233,6 @@ $(function () {
         enableJobs: function () {
             let selectedJobIds = this.getSelectedJobs().map(function (j) { return j.get('_id') })
             postJobs('enable', selectedJobIds)
-            .success(function () {
-                App.trigger('refreshData')
-            })
-        },
-        disableJobs: function () {
-            let selectedJobIds = this.getSelectedJobs().map(function (j) { return j.get('_id') })
-            postJobs('disable', selectedJobIds)
             .success(function () {
                 App.trigger('refreshData')
             })
@@ -282,7 +276,7 @@ $(function () {
         model: JobItemModel,
         template: _.template($('#job-item-details-template').html()),
         initialize: function () {
-            _.bindAll(this, 'render', 'close', 'runJob', 'unlockJob', 'requeueJob', 'enableJob', 'disableJob', 'allowDeleteJob', 'deleteJob')
+            _.bindAll(this, 'render', 'close', 'runJob', 'unlockJob', 'requeueJob', 'enableJob', 'showDisableJobModal', 'allowDeleteJob', 'deleteJob')
             this.listenTo(this.model, 'change', this.render)
         },
         events: {
@@ -291,7 +285,7 @@ $(function () {
             'click [data-action=unlock-job]': 'unlockJob',
             'click [data-action=requeue]': 'requeueJob',
             'click [data-action=enable]': 'enableJob',
-            'click [data-action=disable]': 'disableJob',
+            'click [data-action=disable]': 'showDisableJobModal',
             'click [data-action=delete]': 'allowDeleteJob',
             'click [data-action=delete].deleteable': 'deleteJob'
         },
@@ -326,11 +320,12 @@ $(function () {
                 App.trigger('refreshData')
             })
         },
-        disableJob: function (e) {
-            postJobs('disable', [this.model.get('job')._id])
-            .success(function () {
-                App.trigger('refreshData')
-            })
+        showDisableJobModal: function (e) {
+            // Clear out existing values, provide job data, then show modal
+            $(App.createDisableJobModalView.el).find('input').val('')
+            $(App.createDisableJobModalView.el).find('.job-name').text(this.model.get('job').name)
+            $(App.createDisableJobModalView.el).find('input.job-id').val(this.model.get('job')._id)
+            $(App.createDisableJobModalView.el).modal('show')
         },
         allowDeleteJob: function (e) {
             $(e.currentTarget).addClass('deleteable').text('Confirm deletion')
@@ -417,6 +412,48 @@ $(function () {
         }
     })
 
+    let CreateDisableJobModalView = Backbone.View.extend({
+        el: '#disable-job-pane',
+        initialize: function (options) {
+            _.bindAll(this, 'render', 'disableJob')
+            this.render()
+        },
+        events: {
+            'click [data-action=save]': 'disableJob'
+        },
+        render: function () {
+            return this
+        },
+        disableJob: function () {
+            let self = this,
+                jobReasonEl = this.$el.find('.job-disable-reason');
+
+            if (jobReasonEl.val() === '') {
+                jobReasonEl.parent().addClass('has-error');
+                this.$el.find('#reasonRequiredHelpBlock').removeClass('hide');
+                return this;
+            }
+            else {
+                jobReasonEl.parent().removeClass('has-error');
+                this.$el.find('#reasonRequiredHelpBlock').addClass('hide');
+            }
+
+            let jobIds = [this.$el.find('.job-id').val()],
+                jobDisableReason = jobReasonEl.val();
+            $.ajax({
+                type: 'POST',
+                url: 'api/jobs/disable',
+                data: JSON.stringify({jobIds: jobIds, jobDisableReason: jobDisableReason}),
+                contentType: 'application/json',
+                dataType: 'json'
+            }).done(function() {
+                self.$el.modal('hide');
+            }).always(function() {
+                return this;
+            });
+        }
+    });
+
     let AppView = Backbone.View.extend({
         el: '#app',
         initialize: function () {
@@ -458,6 +495,8 @@ $(function () {
                 jobItems: this.jobItems
             })
             this.createJobPaneView = new CreateJobPaneView({
+            })
+            this.createDisableJobModalView = new CreateDisableJobModalView({
             })
 
             this.listenTo(this, 'requestChange', this.handleRequestChange)

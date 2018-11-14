@@ -1,7 +1,6 @@
 /* Page layout */
-
 #app {
-  padding: 20px;
+  padding: 10px 20px 20px;
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
@@ -30,9 +29,11 @@
 #list-pane {
   flex: 1 1 750px;
   order: 1;
-  padding: 10px;
+  padding: 0 10px 10px;
   /*overflow: scroll;*/
 }
+
+.page-header { margin-top: 0; }
 
 #details-pane {
   padding: 10px;
