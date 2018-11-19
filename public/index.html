@@ -154,7 +154,7 @@
     </script>
 
     <script type="text/template" id="job-item-template">
-        <td <% if (disabled) { %>class="disabled"<% }%>>
+        <td>
             <% if (disabled) { %>
                 <span class="label label-default">DISABLED</span>
             <% }
@@ -167,16 +167,16 @@
                 <% if (failed) { %><span class="label label-danger">Failed</span><% } %>
             <% }%>
         </td>
-        <td <% if (disabled) { %>class="disabled"<% }%>>
+        <td>
             <%- job.name %>
-        <p><small><% if (disabled) { %>Disable Reason: <%- job.disableReason %><% }%></small></p>
+            <p><small><% if (disabled) { %>Disable Reason: <%- job.disableReason %><% }%></small></p>
         </td>
-        <td <% if (disabled) { %>class="disabled"<% }%>><% if (job.lastRunAt) { %><time datetime="<%- moment(job.lastRunAt).toISOString() %>"><%- moment(job.lastRunAt).fromNow() %></time><% } %></td>
-        <td <% if (disabled) { %>class="disabled"<% }%>>
+        <td><% if (job.lastRunAt) { %><time datetime="<%- moment(job.lastRunAt).toISOString() %>"><%- moment(job.lastRunAt).fromNow() %></time><% } %></td>
+        <td>
             <% if (!disabled && job.nextRunAt) { %><time datetime="<%- moment(job.nextRunAt).toISOString() %>"><%- moment(job.nextRunAt).fromNow() %></time><% } %>
         </td>
-        <td <% if (disabled) { %>class="disabled"<% }%>><% if (job.lastFinishedAt) { %><time datetime="<%- moment(job.lastFinishedAt).toISOString() %>"><%- moment(job.lastFinishedAt).fromNow() %></time><% } %></td>
-        <td <% if (disabled) { %>class="disabled"<% }%>><% if (job.lockedAt) { %><time datetime="<%- moment(job.lockedAt).toISOString() %>"><%- moment(job.lockedAt).fromNow() %></time><% } %></td>
+        <td><% if (job.lastFinishedAt) { %><time datetime="<%- moment(job.lastFinishedAt).toISOString() %>"><%- moment(job.lastFinishedAt).fromNow() %></time><% } %></td>
+        <td><% if (job.lockedAt) { %><time datetime="<%- moment(job.lockedAt).toISOString() %>"><%- moment(job.lockedAt).fromNow() %></time><% } %></td>
     </script>
 
     <script type="text/template" id="job-item-details-template">

@@ -108,7 +108,11 @@ $(function () {
         },
         render: function () {
             this.$el.html(this.template(this.model.toJSON()))
-            this.$el.toggleClass('active', this.model.get('selected'))
+            this.$el.toggleClass('info', this.model.get('selected'))
+
+            // Gray out the line if the job is disabled
+            this.$el.toggleClass('active', this.model.get('disabled'))
+
             return this
         }
     })
