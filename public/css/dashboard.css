@@ -46,6 +46,8 @@
 
 #details-pane pre { max-width: 500px; }
 
+#details-list .alert { margin-bottom: 0; }
+
 #create-job-pane {
   padding: 10px;
   flex: 1 0 370px;

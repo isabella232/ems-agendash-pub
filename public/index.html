@@ -157,6 +157,7 @@
         <td>
             <% if (disabled) { %>
                 <span class="label label-default">DISABLED</span>
+                <p><small>Disabled: <time datetime="<%- moment(job.disableDate).toISOString() %>"><%- moment(job.disableDate).format('YYYY-MM-DD') %></time></small></p>
             <% }
             else { %>
                 <% if (repeating) { %><span class="label label-info"><i class="glyphicon glyphicon-repeat"></i> <%- job.repeatInterval %></span><% } %>
@@ -185,8 +186,11 @@
                 <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <h3 class="panel-title"><%- job.name %></h3>
                 <% if (disabled) { %>
-                    <span class="label label-default">DISABLED</span>
-                    <p><small>Disable Reason: <%- job.disableReason %></small></p>
+                    <p><span class="label label-default">DISABLED</span></p>
+                    <div class="alert alert-danger">
+                        <small><strong>Date Disabled:</strong> <time datetime="<%- moment(job.disableDate).toISOString() %>"><%- moment(job.disableDate).format('YYYY-MM-DD') %></time><br/>
+                        <strong>Reason:</strong> <%- job.disableReason %></small>
+                    </div>
                 <% }
                 else { %>
                     <% if (repeating) { %><span class="label label-info"><i class="glyphicon glyphicon-repeat"></i> <%- job.repeatInterval %></span><% } %>
