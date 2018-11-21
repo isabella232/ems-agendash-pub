@@ -169,8 +169,8 @@
             <% }%>
         </td>
         <td>
-            <%- job.name %>
-            <p><small><% if (disabled) { %>Disable Reason: <%- job.disableReason %><% }%></small></p>
+            <%- job.name %> <% if (job.data.environment) { %> (<%- job.data.environment %>) <% } %>
+            <% if (disabled) { %><p><small>Disable Reason: <%- job.disableReason %></small></p><% }%>
         </td>
         <td><% if (job.lastRunAt) { %><time datetime="<%- moment(job.lastRunAt).toISOString() %>"><%- moment(job.lastRunAt).fromNow() %></time><% } %></td>
         <td>
@@ -185,6 +185,7 @@
             <div class="panel-heading">
                 <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <h3 class="panel-title"><%- job.name %></h3>
+                <% if (job.data.environment) { %> <div><%- job.data.environment %></div> <% } %>
                 <% if (disabled) { %>
                     <p><span class="label label-default">DISABLED</span></p>
                     <div class="alert alert-danger">
