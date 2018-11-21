@@ -57,11 +57,15 @@
 
                     <ul id="select-jobs" class="nav nav-pills pull-right">
                         <li role="presentation">
-                            <input type="text" class="job-list-filter form-control" placeholder="Filter... (I don't work yet!)">
+
+                            <div class="form-group has-feedback">
+                                <input type="text" class="job-list-filter form-control" placeholder="Filter... (I don't work yet!)">
+                                <span class="glyphicon glyphicon-search form-control-feedback" aria-hidden="true"></span>
+                            </div>
                         </li>
                         <!--<li role="presentation"><a role="button" data-action="schedule-job">Schedule job</a></li>-->
-                        <li role="presentation"><a role="button" data-action="select-all">Select all</a></li>
-                        <li role="presentation"><a role="button" data-action="select-none">Select none</a></li>
+                        <!--<li role="presentation"><a role="button" data-action="select-all">Select all</a></li>-->
+                        <!--<li role="presentation"><a role="button" data-action="select-none">Select none</a></li>-->
                     </ul>
                     <div id="active-title">
                         <h1>
@@ -203,25 +207,25 @@
                 <% }%>
             </div>
             <div class="panel-body">
-                <% if (job.lastRunAt) { %><p>Last run <time datetime="<%- moment(job.lastRunAt).toISOString() %>"><%- moment(job.lastRunAt).fromNow() %></time></p><% } %>
-                <% if (!disabled && job.nextRunAt) { %><p>Next run <time datetime="<%- moment(job.nextRunAt).toISOString() %>"><%- moment(job.nextRunAt).fromNow() %></time></p><% } %>
-                <% if (job.lastFinishedAt) { %><p>Last finished <time datetime="<%- moment(job.lastFinishedAt).toISOString() %>"><%- moment(job.lastFinishedAt).fromNow() %></time></p><% } %>
-                <% if (job.lockedAt) { %><p>Locked <time datetime="<%- moment(job.lockedAt).toISOString() %>"><%- moment(job.lockedAt).fromNow() %></time></p><% } %>
+                <% if (job.lastRunAt) { %><p>Last Run: <time datetime="<%- moment(job.lastRunAt).toISOString() %>"><%- moment(job.lastRunAt).fromNow() %></time></p><% } %>
+                <% if (!disabled && job.nextRunAt) { %><p>Next Run: <time datetime="<%- moment(job.nextRunAt).toISOString() %>"><%- moment(job.nextRunAt).fromNow() %></time></p><% } %>
+                <% if (job.lastFinishedAt) { %><p>Last Finished: <time datetime="<%- moment(job.lastFinishedAt).toISOString() %>"><%- moment(job.lastFinishedAt).fromNow() %></time></p><% } %>
+                <% if (job.lockedAt) { %><p>Locked: <time datetime="<%- moment(job.lockedAt).toISOString() %>"><%- moment(job.lockedAt).fromNow() %></time></p><% } %>
                 <% if (job.repeatInterval) { %>
                 <p>
                     <% if (disabled) { %>
-                        Previous Schedule
+                        Previous Schedule:
                     <% } else {%>
-                    Repeat each
+                        Schedule:
                     <% }%>
                     <%- job.repeatInterval %>
                 </p>
                 <% } %>
 
-                <strong>Job data</strong>
+                <strong>Job Data</strong>
                 <pre><%- JSON.stringify(job.data, null, 2) %></pre>
                 <% if (failed) { %>
-                <strong>Failure reason</strong>
+                <strong>Failure Reason</strong>
                 <pre><%- JSON.stringify(job.failReason || '', null, 2) %></pre>
                 <% } %>
             </div>
